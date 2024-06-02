@@ -9,13 +9,7 @@ import Category from '@/lib/database/models/category.model'
 import { handleError } from '@/lib/utils'
 
 import {
-  CreateEventParams,
-  UpdateEventParams,
-  DeleteEventParams,
-  GetAllEventsParams,
-  GetEventsByUserParams,
-  GetRelatedEventsByCategoryParams,
-} from '@/types'
+  CreateEventParams,UpdateEventParams,DeleteEventParams,GetAllEventsParams,GetEventsByUserParams,GetRelatedEventsByCategoryParams,} from '@/types'
 
 const getCategoryByName = async (name: string) => {
   return Category.findOne({ name: { $regex: name, $options: 'i' } })
@@ -34,6 +28,11 @@ export async function createEvent({ userId, event, path }: CreateEventParams) {
 
     const organizer = await User.findById(userId)
     if (!organizer) throw new Error('Organizer not found')
+
+      console.log({
+        categoryId: event.categoryId,
+        organizerId: userId,
+      })
 
     const newEvent = await Event.create({ ...event, category: event.categoryId, organizer: userId })
     revalidatePath(path)
@@ -168,6 +167,7 @@ export async function getRelatedEventsByCategory({
 
     return { data: JSON.parse(JSON.stringify(events)), totalPages: Math.ceil(eventsCount / limit) }
   } catch (error) {
+    console.log(error);
     handleError(error)
   }
 }

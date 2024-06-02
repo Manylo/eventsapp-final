@@ -1,4 +1,5 @@
 import React, { useEffect } from 'react'
+import { loadStripe } from '@stripe/stripe-js';
 
 import { IEvent } from '@/lib/database/models/event.model';
 import { Button } from '../ui/button';
@@ -41,7 +42,3 @@ const Checkout = ({ event, userId }: { event: IEvent, userId: string }) => {
 }
 
 export default Checkout
-
-function loadStripe(arg0: string) {
-  throw new Error('Function not implemented.');
-}
