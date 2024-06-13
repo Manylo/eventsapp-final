@@ -15,6 +15,16 @@ export interface IEvent extends Document {
   category: { _id: string, name: string }
   organizer: { _id: string, firstName: string, lastName: string }
 }
+export interface IEvent {
+  id: string;
+  name: string;
+  startDateTime: Date;
+  endDateTime: Date;
+  // Ajoutez toutes les autres propriétés nécessaires
+}
+
+
+
 
 const EventSchema = new Schema({
   title: { type: String, required: true },

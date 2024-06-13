@@ -1,11 +1,13 @@
 import CategoryFilter from '@/components/shared/CategoryFilter';
-import Collection from '@/components/shared/Collection'
+import Collection from '@/components/shared/Collection';
 import Search from '@/components/shared/Search';
-import { Button } from '@/components/ui/button'
+import { Button } from '@/components/ui/button';
 import { getAllEvents } from '@/lib/actions/event.actions';
 import { SearchParamProps } from '@/types';
-import Image from 'next/image'
-import Link from 'next/link'
+import Image from 'next/image';
+import Link from 'next/link';
+import CheckoutButton from '@/components/shared/CheckoutButton'; // Assurez-vous que le chemin est correct
+import { IEvent } from '@/lib/database/models/event.model';
 
 export default async function Home({ searchParams }: SearchParamProps) {
   const page = Number(searchParams?.page) || 1;
@@ -17,7 +19,7 @@ export default async function Home({ searchParams }: SearchParamProps) {
     category,
     page,
     limit: 6
-  })
+  });
 
   return (
     <>
@@ -60,7 +62,11 @@ export default async function Home({ searchParams }: SearchParamProps) {
           page={page}
           totalPages={events?.totalPages}
         />
+
+        {events?.data.map((event: IEvent) => (
+          <CheckoutButton key={event.id} event={event} />
+        ))}
       </section>
     </>
-  )
+  );
 }
