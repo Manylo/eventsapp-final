@@ -275,4 +275,30 @@ body {
 .react-datepicker__time-list-item--selected {
   background-color: #624cf5 !important;
 }
+.button {
+  padding: 0.5rem 1rem;
+  font-size: 1rem;
+  font-weight: bold;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  transition: background-color 0.3s;
+}
+
+.rounded-full {
+  border-radius: 9999px;
+}
+
+.bg-purple-500 {
+  background-color: #7c3aed; /* Couleur violet */
+}
+
+.text-white {
+  color: #ffffff;
+}
+
+.button:hover {
+  background-color: #624cf5; /* Couleur violet foncé au survol */
+}
+
 

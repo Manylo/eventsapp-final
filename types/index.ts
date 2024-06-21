@@ -117,7 +117,7 @@ export type CheckoutOrderParams = {
 }
 
 export type CreateOrderParams = {
-  stripeId: string
+  chargilyId: string
   eventId: string
   buyerId: string
   totalAmount: string
@@ -151,3 +151,33 @@ export type SearchParamProps = {
   params: { id: string }
   searchParams: { [key: string]: string | string[] | undefined }
 }
+
+// Ajoutez ceci dans le fichier approprié, probablement dans `types/index.ts`
+export type OrderDetails = {
+  product_name: string;
+  product_price: number;
+  amount: number;
+  currency: string;
+  client_name: string;
+  client_email: string;
+  client_phone_number: string;
+  client_address: string;
+  mode: string;
+  webhook_url: string;
+  back_url: string;
+  success_url: string;
+  discount: number;
+};
+
+
+
+
+
+
+export type CheckoutOrderDetails = {
+  product_name: string;
+  product_price: number;
+};
+
+// Assurez-vous d'importer ces types là où ils sont nécessaires.
+

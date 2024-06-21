@@ -63,9 +63,7 @@ export default async function Home({ searchParams }: SearchParamProps) {
           totalPages={events?.totalPages}
         />
 
-        {events?.data.map((event: IEvent) => (
-          <CheckoutButton key={event.id} event={event} />
-        ))}
+      
       </section>
     </>
   );
