@@ -180,4 +180,3 @@ export type CheckoutOrderDetails = {
 };
 
 // Assurez-vous d'importer ces types là où ils sont nécessaires.
-

@@ -1,8 +1,7 @@
-// api/webhook/chargily/route.ts
-
 import { NextRequest, NextResponse } from "next/server";
 import crypto from "crypto";
 import { createOrder } from "@/lib/actions/order.actions";
+import mongoose from "mongoose";
 
 const GET_API_KEY = () => {
   const key = process.env.CHARGILY_SECRET_KEY;
@@ -37,9 +36,8 @@ export async function POST(request: NextRequest) {
 
   try {
     await createOrder({
-    chargilyId: "some_generated_id",
-      eventId,
-      buyerId,
+      eventId: new mongoose.Types.ObjectId(eventId),
+      userId: new mongoose.Types.ObjectId(buyerId),
       totalAmount,
       createdAt: new Date(),
     });

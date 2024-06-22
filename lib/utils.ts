@@ -87,7 +87,17 @@ export function removeKeysFromQuery({ params, keysToRemove }: RemoveUrlQueryPara
   )
 }
 
+
 export const handleError = (error: unknown) => {
   console.error(error)
   throw new Error(typeof error === 'string' ? error : JSON.stringify(error))
 }
+// lib/utils.ts
+export const generateShareUrl = (eventId: string): string => {
+  if (typeof window !== 'undefined') {
+    return `${window.location.origin}/events/${eventId}`;
+  }
+  return '';
+};
+
+

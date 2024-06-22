@@ -1,14 +1,16 @@
-import Search  from '@/components/shared/Search'
+import Search from '@/components/shared/Search'
 import { getOrdersByEvent } from '@/lib/actions/order.actions'
 import { formatDateTime, formatPrice } from '@/lib/utils'
 import { SearchParamProps } from '@/types'
-import { IOrderItem } from '@/lib/database/models/order.model'
+import { IOrder } from '@/lib/database/models/order.model'
+import mongoose from 'mongoose'
 
 const Orders = async ({ searchParams }: SearchParamProps) => {
-  const eventId = (searchParams?.eventId as string) || ''
+  const eventId = new mongoose.Types.ObjectId((searchParams?.eventId as string) || '')
   const searchText = (searchParams?.query as string) || ''
 
-  const orders = await getOrdersByEvent({ eventId, searchString: searchText })
+  const ordersData = await getOrdersByEvent({ eventId, searchString: searchText })
+  const orders = ordersData.data
 
   return (
     <>
@@ -41,19 +43,19 @@ const Orders = async ({ searchParams }: SearchParamProps) => {
             ) : (
               <>
                 {orders &&
-                  orders.map((row: IOrderItem) => (
+                  orders.map((row: IOrder) => (
                     <tr
-                      key={row._id}
+                      key={((row._id as unknown) as mongoose.Types.ObjectId).toString()} // Cast 'unknown' to 'ObjectId' and then to 'string'
                       className="p-regular-14 lg:p-regular-16 border-b "
                       style={{ boxSizing: 'border-box' }}>
-                      <td className="min-w-[250px] py-4 text-primary-500">{row._id}</td>
-                      <td className="min-w-[200px] flex-1 py-4 pr-4">{row.eventTitle}</td>
-                      <td className="min-w-[150px] py-4">{row.buyer}</td>
+                      <td className="min-w-[250px] py-4 text-primary-500">{((row._id as unknown) as mongoose.Types.ObjectId).toString()}</td>
+                      <td className="min-w-[200px] flex-1 py-4 pr-4">{row.eventId.title}</td> {/* Assurez-vous que 'eventId' est peuplé */}
+                      <td className="min-w-[150px] py-4">{row.buyer?.name}</td> {/* Correction de 'buyer' */}
                       <td className="min-w-[100px] py-4">
                         {formatDateTime(row.createdAt).dateTime}
                       </td>
                       <td className="min-w-[100px] py-4 text-right">
-                        {formatPrice(row.totalAmount)}
+                        {formatPrice(row.totalAmount.toString())} {/* Correction du type de 'totalAmount' */}
                       </td>
                     </tr>
                   ))}

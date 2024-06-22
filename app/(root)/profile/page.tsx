@@ -5,21 +5,21 @@ import { getOrdersByUser } from '@/lib/actions/order.actions'
 import { IOrder } from '@/lib/database/models/order.model'
 import { SearchParamProps } from '@/types'
 import { auth } from '@clerk/nextjs/server'
-
+import mongoose from 'mongoose'
 import Link from 'next/link'
 import React from 'react'
 
 const ProfilePage = async ({ searchParams }: SearchParamProps) => {
   const { sessionClaims } = auth();
-  const userId = sessionClaims?.userId as string;
+  const userId = new mongoose.Types.ObjectId(sessionClaims?.userId as string);
 
   const ordersPage = Number(searchParams?.ordersPage) || 1;
   const eventsPage = Number(searchParams?.eventsPage) || 1;
 
   const orders = await getOrdersByUser({ userId, page: ordersPage})
 
-  const orderedEvents = orders?.data.map((order: IOrder) => order.event) || [];
-  const organizedEvents = await getEventsByUser({ userId, page: eventsPage })
+  const orderedEvents = orders?.data.map((order: IOrder) => order.eventId) || [];
+  const organizedEvents = await getEventsByUser({ userId: sessionClaims?.userId as string, page: eventsPage });
 
   return (
     <>

@@ -1,93 +1,56 @@
-import { NextRequest, NextResponse } from 'next/server';
+import { NextRequest, NextResponse } from "next/server";
+import crypto from "crypto";
+import { createOrder } from "@/lib/actions/order.actions";
+import mongoose from "mongoose";
 
-const CHARGILY_SECRET_KEY = process.env.CHARGILY_SECRET_KEY;
-const CHARGILY_API_URL = process.env.CHARGILY_API_URL;
+const GET_API_KEY = () => {
+  const key = process.env.CHARGILY_SECRET_KEY;
+  if (!key) throw new Error("Chargily API key is not provided");
+  return key;
+};
 
-if (!CHARGILY_SECRET_KEY) {
-  console.error('CHARGILY_SECRET_KEY is missing from environment variables');
-  throw new Error('Veuillez ajouter CHARGILY_SECRET_KEY à votre fichier .env.local');
-}
+export async function POST(request: NextRequest) {
+  const signature = request.headers.get("Signature");
+  const payload = await request.json();
 
-if (!CHARGILY_API_URL) {
-  console.error('CHARGILY_API_URL is missing from environment variables');
-  throw new Error('Veuillez ajouter CHARGILY_API_URL à votre fichier .env.local');
-}
-
-console.log('CHARGILY_API_URL:', CHARGILY_API_URL); // Log l'URL pour vérifier
-
-export async function POST(req: NextRequest) {
-  const body = await req.json();
-
-  const {
-    amount,
-    currency,
-    client,
-    client_email,
-    client_phone_number,
-    client_address,
-    mode,
-    webhook_url,
-    back_url,
-    success_url,
-    discount
-  } = body;
-
-  if (
-    !amount ||
-    !currency ||
-    !client ||
-    !client_email ||
-    !client_phone_number ||
-    !client_address ||
-    !mode ||
-    !webhook_url ||
-    !back_url ||
-    !success_url ||
-    discount === undefined
-  ) {
-    return NextResponse.json({ message: 'Paramètres manquants' }, { status: 400 });
+  if (!signature) {
+    return NextResponse.json({
+      status: "failed",
+      message: "Missing signature",
+    });
   }
 
-  const paymentData = {
-    amount,
-    currency,
-    client,
-    client_email,
-    client_phone_number,
-    client_address,
-    mode,
-    discount,
-    back_url,
-    webhook_url,
-    success_url
-  };
+  const computedSignature = crypto
+    .createHmac("sha256", GET_API_KEY())
+    .update(JSON.stringify(payload))
+    .digest("hex");
 
-  const options = {
-    method: 'POST',
-    headers: {
-      Authorization: `Bearer ${CHARGILY_SECRET_KEY}`,
-      'Content-Type': 'application/json'
-    },
-    body: JSON.stringify(paymentData)
-  };
+  if (computedSignature !== signature) {
+    return NextResponse.json({
+      status: "failed",
+      message: "Invalid signature",
+    });
+  }
+
+  const { eventId, buyerId, totalAmount } = payload;
 
   try {
-    const response = await fetch(CHARGILY_API_URL as string, options);
-    const data = await response.json();
+    await createOrder({
+      eventId: new mongoose.Types.ObjectId(eventId),
+      userId: new mongoose.Types.ObjectId(buyerId),
+      totalAmount,
+      createdAt: new Date(),
+    });
 
-    if (!response.ok) {
-      console.error('Erreur lors de la création du paiement:', data);
-      throw new Error(data.message || 'Une erreur est survenue');
-    }
-
-    return NextResponse.json(data, { status: 200 });
+    return NextResponse.json({
+      status: "success",
+      message: "Order created successfully",
+    });
   } catch (error) {
-    if (error instanceof Error) {
-      console.error('Erreur lors de la création du paiement:', error.message);
-      return NextResponse.json({ message: error.message }, { status: 500 });
-    } else {
-      console.error('Erreur inconnue:', error);
-      return NextResponse.json({ message: 'Une erreur inconnue est survenue' }, { status: 500 });
-    }
+    console.error(error);
+    return NextResponse.json({
+      status: "failed",
+      message: "Order creation failed",
+    });
   }
 }

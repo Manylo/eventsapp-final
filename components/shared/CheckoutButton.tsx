@@ -1,4 +1,3 @@
-
 "use client"
 
 import { IEvent } from '@/lib/database/models/event.model';
