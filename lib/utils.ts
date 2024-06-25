@@ -100,4 +100,3 @@ export const generateShareUrl = (eventId: string): string => {
   return '';
 };
 
-
