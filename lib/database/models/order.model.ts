@@ -23,6 +23,7 @@ import { IEvent } from './event.model'; // Assurez-vous que ce fichier contient 
 // });
 
 export interface IOrder extends Document {
+  buyer: any;
   _id: Schema.Types.ObjectId;
   eventId: IEvent;
   userId: Schema.Types.ObjectId;
