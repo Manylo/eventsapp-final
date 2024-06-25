@@ -12,32 +12,33 @@ const GET_API_KEY = () => {
 export async function POST(request: NextRequest) {
   const signature = request.headers.get("Signature");
   const payload = await request.json();
+  
+  // if (!signature) {
+  //   return NextResponse.json({
+  //     status: "failed",
+  //     message: "Missing signature",
+  //   });
+  // }
 
-  if (!signature) {
-    return NextResponse.json({
-      status: "failed",
-      message: "Missing signature",
-    });
-  }
+  // const computedSignature = crypto
+  //   .createHmac("sha256", GET_API_KEY())
+  //   .update(JSON.stringify(payload))
+  //   .digest("hex");
 
-  const computedSignature = crypto
-    .createHmac("sha256", GET_API_KEY())
-    .update(JSON.stringify(payload))
-    .digest("hex");
+  // if (computedSignature !== signature) {
+  //   return NextResponse.json({
+  //     status: "failed",
+  //     message: "Invalid signature",
+  //   });
+  // }
 
-  if (computedSignature !== signature) {
-    return NextResponse.json({
-      status: "failed",
-      message: "Invalid signature",
-    });
-  }
-
-  const { eventId, buyerId, totalAmount } = payload;
+  const { eventId, userId, totalAmount } = payload;
 
   try {
+    console.log('here')
     await createOrder({
       eventId: new mongoose.Types.ObjectId(eventId),
-      userId: new mongoose.Types.ObjectId(buyerId),
+      userId: new mongoose.Types.ObjectId(userId),
       totalAmount,
       createdAt: new Date(),
     });

@@ -17,7 +17,7 @@ interface SocialShareProps {
 }
 
 const SocialShare: React.FC<SocialShareProps> = ({ url, title }) => {
-  console.log("Share URL:", url); // Ajoute ceci pour vérifier l'URL
+  console.log(url); 
   return (
     <div className="social-share-buttons">
       <FacebookShareButton url={url} title={title}>

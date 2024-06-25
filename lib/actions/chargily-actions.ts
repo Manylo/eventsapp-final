@@ -1,9 +1,9 @@
 "use server";
 
 import { Checkout, Price, Product } from "@chargily/chargily-pay";
-
+import { createOrder } from "@/lib/actions/order.actions";
 const CHARGILY_BASE_URL = "https://pay.chargily.net/test/api/v2" as const;
-
+import mongoose from "mongoose";
 export const create_product = async ({
   product_name,
 }: {
@@ -54,9 +54,11 @@ export const create_price = async ({
 
   try {
     const response = await fetch(`${CHARGILY_BASE_URL}/prices`, options); // Sending a POST request to create a price
-    const data = (await response.json()) as Price; // Parsing response JSON into Price type
+    const price = (await response.json()) as Price; // Parsing response JSON into Price type
+    console.log(product_id)
 
-    return data; // Returning the created price
+        //const res = await fetch(`http://localhost:3000/api/chargily/create-payment/`, orderoptions)
+    return price; // Returning the created price
   } catch (err) {
     console.error(err); // Logging errors if any occur during the process
   }
