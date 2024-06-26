@@ -18,12 +18,13 @@ const ChargilyPaymentButton: React.FC<CheckoutProps> = ({ event, userId }) => {
       onClick={async () => {
         setIsLoading(true);
         const price = parseInt(event.price);
-        await pay({
+        const response = await pay({
           userId,
           event_id: event._id.toString(), // S'assurer que c'est une chaîne de caractères
           product_name: event.title,
           product_price: price,
         });
+        console.log(response)
         setIsLoading(false);
       }}
     >

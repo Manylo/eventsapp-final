@@ -50,7 +50,7 @@ const Orders = async ({ searchParams }: SearchParamProps) => {
                       style={{ boxSizing: 'border-box' }}>
                       <td className="min-w-[250px] py-4 text-primary-500">{((row._id as unknown) as mongoose.Types.ObjectId).toString()}</td>
                       <td className="min-w-[200px] flex-1 py-4 pr-4">{row.eventId.title}</td> {/* Assurez-vous que 'eventId' est peuplé */}
-                      <td className="min-w-[150px] py-4">{row.buyer?.name}</td> {/* Correction de 'buyer' */}
+                      <td className="min-w-[150px] py-4">{row.buyer}</td> {/* Correction de 'buyer' */}
                       <td className="min-w-[100px] py-4">
                         {formatDateTime(row.createdAt).dateTime}
                       </td>
