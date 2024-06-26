@@ -4,11 +4,11 @@ import Image from 'next/image';
 import CheckoutButton from '@/components/shared/CheckoutButton';
 import Collection from '@/components/shared/Collection';
 import { getEventById, getRelatedEventsByCategory } from '@/lib/actions/event.actions';
-import { formatDateTime, generateShareUrl } from '@/lib/utils';
+import { formatDateTime } from '@/lib/utils';
 import { SearchParamProps } from '@/types';
 import dynamic from 'next/dynamic';
 
-const SocialShare = dynamic(() => import('@/components/shared/SocialShare'), { ssr: false });
+const ClientSocialShare = dynamic(() => import('@/components/shared/ClientSocialShare'), { ssr: false });
 
 const EventDetails = async ({ params: { id }, searchParams }: SearchParamProps) => {
   const event = await getEventById(id);
@@ -19,7 +19,6 @@ const EventDetails = async ({ params: { id }, searchParams }: SearchParamProps) 
     page: searchParams.page as string,
   });
 
-  const shareUrl = generateShareUrl(event._id);
   const title = event.title;
 
   return (
@@ -84,11 +83,12 @@ const EventDetails = async ({ params: { id }, searchParams }: SearchParamProps) 
               <p className="p-medium-16 lg:p-regular-18 truncate text-primary-500 underline">{event.url}</p>
             </div>
 
-            <SocialShare url={shareUrl} title={title} />
+            <ClientSocialShare eventId={event._id} title={title} />
           </div>
         </div>
       </section>
 
+      {/* EVENTS with the same category */}
       <section className="wrapper my-8 flex flex-col gap-8 md:gap-12">
         <h2 className="h2-bold">Related Events</h2>
 
