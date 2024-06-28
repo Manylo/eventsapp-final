@@ -1,4 +1,3 @@
-// app/(root)/events/[id]/page.tsx
 import React from 'react';
 import Image from 'next/image';
 import CheckoutButton from '@/components/shared/CheckoutButton';
@@ -7,12 +6,14 @@ import { getEventById, getRelatedEventsByCategory } from '@/lib/actions/event.ac
 import { formatDateTime } from '@/lib/utils';
 import { SearchParamProps } from '@/types';
 import dynamic from 'next/dynamic';
+import CommentSection from '@/components/shared/CommentSection'; // Nouveau composant pour gérer les commentaires
 
 const ClientSocialShare = dynamic(() => import('@/components/shared/ClientSocialShare'), { ssr: false });
 
+export const revalidate = 60; // Revalidation ISR (Incremental Static Regeneration)
+
 const EventDetails = async ({ params: { id }, searchParams }: SearchParamProps) => {
   const event = await getEventById(id);
-
   const relatedEvents = await getRelatedEventsByCategory({
     categoryId: event.category._id,
     eventId: event._id,
@@ -40,7 +41,7 @@ const EventDetails = async ({ params: { id }, searchParams }: SearchParamProps) 
               <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
                 <div className="flex gap-3">
                   <p className="p-bold-20 rounded-full bg-green-500/10 px-5 py-2 text-green-700">
-                    {event.isFree ? 'FREE' : `$${event.price}`}
+                    {event.isFree ? 'FREE' : `${event.price}DA`}
                   </p>
                   <p className="p-medium-16 rounded-full bg-grey-500/10 px-4 py-2.5 text-grey-500">
                     {event.category.name}
@@ -78,7 +79,7 @@ const EventDetails = async ({ params: { id }, searchParams }: SearchParamProps) 
             </div>
 
             <div className="flex flex-col gap-2">
-              <p className="p-bold-20 text-grey-600">What You'll Learn:</p>
+              <p className="p-bold-20 text-grey-600">Description:</p>
               <p className="p-medium-16 lg:p-regular-18">{event.description}</p>
               <p className="p-medium-16 lg:p-regular-18 truncate text-primary-500 underline">{event.url}</p>
             </div>
@@ -86,6 +87,12 @@ const EventDetails = async ({ params: { id }, searchParams }: SearchParamProps) 
             <ClientSocialShare eventId={event._id} title={title} />
           </div>
         </div>
+      </section>
+
+      {/* Section des commentaires */}
+      <section className="wrapper my-8 flex flex-col gap-8 md:gap-12">
+        <h2 className="h2-bold">Commentaires</h2>
+        <CommentSection eventId={event._id} />
       </section>
 
       {/* EVENTS with the same category */}

@@ -10,8 +10,8 @@ const poppins = Poppins({
 });
 
 export const metadata: Metadata = {
-  title: "Events#DZ",
-  description: "Events#DZ is a platform for event management",
+  title: "Evently",
+  description: "Evently is a platform for event management",
   icons: {
     icon: '/assets/images/logo.svg',
   },
@@ -27,8 +27,8 @@ export default function RootLayout({
       <html lang="en">
         <head>
           <link rel="icon" href="/assets/images/logo.svg" />
-          <meta name="description" content="Events#DZ is a platform for event management" />
-          <title>Events#DZ</title>
+          <meta name="description" content="Evently is a platform for event management" />
+          <title>Evently</title>
         </head>
         <body className={poppins.className}>
           {children}

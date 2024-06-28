@@ -6,7 +6,8 @@ export default authMiddleware({
     '/events/:id',
     '/api/webhook/clerk',
     '/api/webhook/chargily',
-    '/api/uploadthing'
+    '/api/uploadthing',
+    '/api/comments' // Ajoutez cette ligne pour rendre la route publique
   ],
   ignoredRoutes: [
     '/api/webhook/clerk',

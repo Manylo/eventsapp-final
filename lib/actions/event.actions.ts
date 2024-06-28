@@ -1,15 +1,18 @@
 'use server'
-
+import mongoose from 'mongoose';
 import { revalidatePath } from 'next/cache'
 
 import { connectToDatabase } from '@/lib/database'
 import Event from '@/lib/database/models/event.model'
 import User from '@/lib/database/models/user.model'
+import Comment from '@/lib/database/models/comment.model'
+import { Comment as CommentType } from '@/types';
 import Category from '@/lib/database/models/category.model'
 import { handleError } from '@/lib/utils'
 
 import {
-  CreateEventParams,UpdateEventParams,DeleteEventParams,GetAllEventsParams,GetEventsByUserParams,GetRelatedEventsByCategoryParams,} from '@/types'
+  CreateEventParams, UpdateEventParams, DeleteEventParams, GetAllEventsParams, GetEventsByUserParams, GetRelatedEventsByCategoryParams,
+} from '@/types'
 
 const getCategoryByName = async (name: string) => {
   return Category.findOne({ name: { $regex: name, $options: 'i' } })
@@ -19,6 +22,7 @@ const populateEvent = (query: any) => {
   return query
     .populate({ path: 'organizer', model: User, select: '_id firstName lastName' })
     .populate({ path: 'category', model: Category, select: '_id name' })
+    .populate({ path: 'comments', model: Comment, populate: { path: 'userId', model: User, select: 'username' } }); // Ajout de la population des commentaires
 }
 
 // CREATE
@@ -28,11 +32,6 @@ export async function createEvent({ userId, event, path }: CreateEventParams) {
 
     const organizer = await User.findById(userId)
     if (!organizer) throw new Error('Organizer not found')
-
-      console.log({
-        categoryId: event.categoryId,
-        organizerId: userId,
-      })
 
     const newEvent = await Event.create({ ...event, category: event.categoryId, organizer: userId })
     revalidatePath(path)
@@ -170,4 +169,26 @@ export async function getRelatedEventsByCategory({
     console.log(error);
     handleError(error)
   }
+}
+
+// COMMENT ACTIONS
+export async function addComment(eventId: string, clerkUserId: string, content: string): Promise<CommentType> {
+  await connectToDatabase();
+  
+  // Trouver l'utilisateur par clerkId
+  const user = await User.findOne({ clerkId: clerkUserId });
+  if (!user) {
+    throw new Error('User not found');
+  }
+
+  const comment = await Comment.create({ eventId: new mongoose.Types.ObjectId(eventId), clerkUserId, user: user._id, content });
+  return comment.toObject() as CommentType;
+}
+
+export async function getCommentsByEvent(eventId: string): Promise<CommentType[]> {
+  await connectToDatabase();
+  const comments = await Comment.find({ eventId: new mongoose.Types.ObjectId(eventId) })
+                                .populate('user', 'username')
+                                .lean();
+  return comments as CommentType[];
 }

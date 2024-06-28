@@ -179,4 +179,18 @@ export type CheckoutOrderDetails = {
   product_price: number;
 };
 
+export type Comment = {
+  _id: string;
+  content: string;
+  userId: string;
+  eventId: string;
+  createdAt: string;
+  user: {
+    _id: string;
+    username: string;
+  };
+};
+
+
+
 // Assurez-vous d'importer ces types là où ils sont nécessaires.
