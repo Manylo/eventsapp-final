@@ -42,8 +42,11 @@ export async function getOrdersByUser({ userId, page = 1, limit = 10 }: GetOrder
     const orders = await Order.find({ userId })
       .skip(skipAmount)
       .limit(limit)
-      .populate('eventId')
-      .populate('userId', 'username')  // Populate userId to get the username
+      .populate({
+        path: 'eventId',
+        populate: { path: 'organizer', select: 'firstName lastName' } // Populate organizer inside eventId
+      })
+      .populate('userId', 'username') // Populate userId to get the username
       .exec();
     const totalOrders = await Order.countDocuments({ userId });
     return {
@@ -55,6 +58,7 @@ export async function getOrdersByUser({ userId, page = 1, limit = 10 }: GetOrder
     throw new Error('Fetching orders failed');
   }
 }
+
 
 export async function getOrdersByEvent({ eventId, searchString = '', page = 1, limit = 10 }: GetOrdersByEventParams): Promise<{ data: IOrder[], totalPages: number }> {
   try {
