@@ -300,3 +300,52 @@ body {
 .button:hover {
   background-color: #624cf5; /* Couleur violet foncé au survol */
 }
+
+
+/* css style */
+.choiceContainer{
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 30px;
+  height: 70vh;
+}
+.choiceContainer>h1{
+  font-size: 30px;
+  font-weight: 500;
+}
+.choices{
+  display: flex;
+  gap: 20px;
+}
+.choice{
+  cursor: pointer;
+  border: grey solid 1px;
+  border-radius: 15px;
+  padding: 15px;
+  width: 300px;
+  height: 200px;
+  transition: all 0.1s ease;
+}
+.choice:active{
+  transform: scale(0.98,0.98);
+}
+.choice h1{
+  font-size: 28px;
+}
+.choiceContainer .activeButton{
+  width: 200px;
+  height: 40px;
+  background-color:#624cf5;
+  color: white;
+  border-radius: 10px;
+}
+.choiceContainer .inactiveButton{
+  width: 150px;
+  height: 40px;
+  color: grey;
+  background-color: rgb(200, 197, 197);
+  border-radius: 10px;
+  cursor: not-allowed;
+}

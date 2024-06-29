@@ -73,3 +73,24 @@ export async function deleteUser(clerkId: string) {
   }
 }
 
+export async function getUserByclerkId(clerkId: string){
+  try {
+    await connectToDatabase();
+    const user = await User.findOne({clerkId: clerkId})
+    if (!user) throw new Error('User not found')
+    return JSON.parse(JSON.stringify(user))
+  } catch (error) {
+    handleError(error)
+  }
+}
+
+export async function affectRoleUser(clerkId:string,role:string){
+  try{
+    await connectToDatabase();
+    const updatedUser=await User.findOneAndUpdate({clerkId:clerkId},{role:role},{new:true});
+    if(!updatedUser) throw new Error('User role update failed');
+    return JSON.parse(JSON.stringify(updatedUser))
+  }catch(error){
+    handleError(error)
+  }
+}

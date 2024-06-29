@@ -1,4 +1,4 @@
-export const headerLinks = [
+export const headerLinksO = [
   {
     label: 'Home',
     route: '/',
@@ -6,6 +6,16 @@ export const headerLinks = [
   {
     label: 'Create Event',
     route: '/events/create',
+  },
+  {
+    label: 'My Profile',
+    route: '/profile',
+  },
+]
+export const headerLinksP = [
+  {
+    label: 'Home',
+    route: '/',
   },
   {
     label: 'My Profile',
