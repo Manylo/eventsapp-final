@@ -65,7 +65,7 @@ const EventDetails = async ({ params: { id }, searchParams }: SearchParamProps) 
                     {formatDateTime(event.startDateTime).dateOnly} - {' '}
                     {formatDateTime(event.startDateTime).timeOnly}
                   </p>
-                  <p>
+                  <p style={{ marginLeft: '10px' }}>
                     {formatDateTime(event.endDateTime).dateOnly} -  {' '}
                     {formatDateTime(event.endDateTime).timeOnly}
                   </p>
@@ -81,10 +81,16 @@ const EventDetails = async ({ params: { id }, searchParams }: SearchParamProps) 
             <div className="flex flex-col gap-2">
               <p className="p-bold-20 text-grey-600">Description:</p>
               <p className="p-medium-16 lg:p-regular-18">{event.description}</p>
-              <p className="p-medium-16 lg:p-regular-18 truncate text-primary-500 underline">{event.url}</p>
+              <a href={event.url} className="p-medium-16 lg:p-regular-18 text-primary-500 underline" target="_blank" rel="noopener noreferrer">{event.url}</a>
             </div>
 
-            <ClientSocialShare eventId={event._id} title={title} />
+
+            <div className="flex flex-col gap-2">
+              <p className="p-bold-20 text-grey-600">Social Share:</p>
+              <div className="flex gap-4">
+                <ClientSocialShare eventId={event._id} title={title} />
+                </div>
+            </div>
           </div>
         </div>
       </section>

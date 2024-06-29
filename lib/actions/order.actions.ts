@@ -23,7 +23,6 @@ interface GetOrdersByEventParams {
 
 export async function createOrder({ eventId, userId, totalAmount, createdAt }: CreateOrderParams): Promise<IOrder> {
   try {
-    
     const newOrder = await Order.create({
       eventId,
       userId,
@@ -44,6 +43,7 @@ export async function getOrdersByUser({ userId, page = 1, limit = 10 }: GetOrder
       .skip(skipAmount)
       .limit(limit)
       .populate('eventId')
+      .populate('userId', 'username')  // Populate userId to get the username
       .exec();
     const totalOrders = await Order.countDocuments({ userId });
     return {
@@ -59,15 +59,20 @@ export async function getOrdersByUser({ userId, page = 1, limit = 10 }: GetOrder
 export async function getOrdersByEvent({ eventId, searchString = '', page = 1, limit = 10 }: GetOrdersByEventParams): Promise<{ data: IOrder[], totalPages: number }> {
   try {
     const skipAmount = (page - 1) * limit;
-    //const query = { eventId, 'buyer.name': { $regex: searchString, $options: 'i' } };
-    const orders = await Order.find()
+    const query = { eventId };
+    const orders = await Order.find(query)
       .skip(skipAmount)
       .limit(limit)
       .populate('eventId')
+      .populate('userId', 'username')  // Populate userId to get the username
       .exec();
-    const totalOrders = await Order.countDocuments();
+    
+    // Filtrage après population
+    const filteredOrders = orders.filter(order => order.userId && (order.userId as any).username.includes(searchString));
+    
+    const totalOrders = await Order.countDocuments(query);
     return {
-      data: orders,
+      data: filteredOrders,
       totalPages: Math.ceil(totalOrders / limit),
     };
   } catch (error) {
