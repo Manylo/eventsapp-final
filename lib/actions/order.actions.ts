@@ -1,5 +1,9 @@
 import Order, { IOrder } from '@/lib/database/models/order.model';
 import mongoose, { Schema } from "mongoose";
+import { sendEventConfirmationEmail } from '@/lib/notifications'; // Importer la fonction de notification
+import { getUserById } from './user.actions'; // Assurez-vous que cette fonction existe
+import { getEventById } from './event.actions'; // Assurez-vous que cette fonction existe
+
 
 interface CreateOrderParams {
   eventId: mongoose.Types.ObjectId;
@@ -29,12 +33,21 @@ export async function createOrder({ eventId, userId, totalAmount, createdAt }: C
       totalAmount,
       createdAt,
     });
+
+    const event = await getEventById(eventId.toString()); // Charger les détails de l'événement
+    const user = await getUserById(userId.toString()); // Charger les détails de l'utilisateur
+
+    // Envoyer l'e-mail de confirmation
+    await sendEventConfirmationEmail(user, event);
+
     return newOrder;
   } catch (error) {
     console.error('Error creating order:', error);
     throw new Error('Order creation failed');
   }
 }
+
+
 
 export async function getOrdersByUser({ userId, page = 1, limit = 10 }: GetOrdersByUserParams): Promise<{ data: IOrder[], totalPages: number }> {
   try {

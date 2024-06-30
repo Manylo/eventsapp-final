@@ -5,8 +5,11 @@ import Collection from '@/components/shared/Collection';
 import { getEventById, getRelatedEventsByCategory } from '@/lib/actions/event.actions';
 import { formatDateTime } from '@/lib/utils';
 import { SearchParamProps } from '@/types';
+import { getUserById } from '@/lib/actions/user.actions';
+import { auth } from '@clerk/nextjs/server';
 import dynamic from 'next/dynamic';
 import CommentSection from '@/components/shared/CommentSection'; // Nouveau composant pour gérer les commentaires
+import mongoose from 'mongoose';
 
 const ClientSocialShare = dynamic(() => import('@/components/shared/ClientSocialShare'), { ssr: false });
 
@@ -19,6 +22,16 @@ const EventDetails = async ({ params: { id }, searchParams }: SearchParamProps) 
     eventId: event._id,
     page: searchParams.page as string,
   });
+
+
+  const { sessionClaims } = auth();
+  let role="";
+  
+  if(sessionClaims){
+    const userId = new mongoose.Types.ObjectId(sessionClaims?.userId as string);
+    const user = await getUserById(userId.toString());
+    role=user?.role;
+  }
 
   const title = event.title;
 
@@ -55,7 +68,7 @@ const EventDetails = async ({ params: { id }, searchParams }: SearchParamProps) 
               </div>
             </div>
 
-            <CheckoutButton event={event} />
+            <CheckoutButton event={event} role={role} />
 
             <div className="flex flex-col gap-5">
               <div className='flex gap-2 md:gap-3'>
@@ -76,9 +89,7 @@ const EventDetails = async ({ params: { id }, searchParams }: SearchParamProps) 
                 <Image src="/assets/icons/location.svg" alt="location" width={32} height={32} />
                 <p className="p-medium-16 lg:p-regular-20">{event.location}</p>
               </div>
-            </div>
-
-            <div className="flex flex-col gap-2">
+            </div><div className="flex flex-col gap-2">
               <p className="p-bold-20 text-grey-600">Description:</p>
               <p className="p-medium-16 lg:p-regular-18">{event.description}</p>
               <a href={event.url} className="p-medium-16 lg:p-regular-18 text-primary-500 underline" target="_blank" rel="noopener noreferrer">{event.url}</a>
@@ -98,7 +109,7 @@ const EventDetails = async ({ params: { id }, searchParams }: SearchParamProps) 
       {/* Section des commentaires */}
       <section className="wrapper my-8 flex flex-col gap-8 md:gap-12">
         <h2 className="h2-bold">Commentaires</h2>
-        <CommentSection eventId={event._id} />
+        <CommentSection eventId={event._id} role={role} />
       </section>
 
       {/* EVENTS with the same category */}

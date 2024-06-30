@@ -5,14 +5,16 @@ import Link from 'next/link'
 import React from 'react'
 import { DeleteConfirmation } from './DeleteConfirmation'
 import { auth } from '@clerk/nextjs/server'
+import GenerateTicketButton from './GenerateTicketButton' // Import the new client component
 
 type CardProps = {
   event: IEvent,
   hasOrderLink?: boolean,
-  hidePrice?: boolean
+  hidePrice?: boolean,
+  showGenerateTicket?: boolean // Add this prop
 }
 
-const Card = ({ event, hasOrderLink, hidePrice }: CardProps) => {
+const Card = ({ event, hasOrderLink, hidePrice, showGenerateTicket }: CardProps) => {
   const { sessionClaims } = auth();
   const userId = sessionClaims?.userId as string;
 
@@ -70,6 +72,8 @@ const Card = ({ event, hasOrderLink, hidePrice }: CardProps) => {
             </Link>
           )}
         </div>
+
+        {showGenerateTicket && <GenerateTicketButton eventId={event._id} userId={userId} eventTitle={event.title} />} {/* Conditionally render the button */}
       </div>
     </div>
   )

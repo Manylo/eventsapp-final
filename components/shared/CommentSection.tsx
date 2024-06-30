@@ -7,9 +7,10 @@ import { Comment } from '@/types';
 
 type CommentSectionProps = {
   eventId: string;
+  role: any; 
 };
 
-const CommentSection = ({ eventId }: CommentSectionProps) => {
+const CommentSection = ({ eventId,role }: CommentSectionProps) => {
   const [comments, setComments] = useState<Comment[]>([]);
   const [error, setError] = useState<string | null>(null);
 
@@ -52,7 +53,7 @@ const CommentSection = ({ eventId }: CommentSectionProps) => {
     <div className="comment-section">
       <h2>Commentaires</h2>
       {error ? <p className="error">{error}</p> : <CommentList comments={comments} />}
-      <CommentForm eventId={eventId} onCommentSubmit={handleCommentSubmit} />
+      {(role!="" && role==="participant") && <CommentForm eventId={eventId} onCommentSubmit={handleCommentSubmit} />}
       
       <style jsx>{`
         .comment-section {
