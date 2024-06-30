@@ -21,6 +21,9 @@ export default function Page(){
         const response=await axios.post("../api/affectRole",{userId:userId,role:choice==="1" ? "organiser":"participant"});
         console.log(response.data);
         router.push("/");
+        setTimeout(() => {
+            window.location.reload();
+          }, 2500);
     }
     return(
         <>
